@@ -10,9 +10,15 @@ router.get("/ping", function (req, res, next) {
 // GET app version
 router.get("/version", function (req, res, next) {
   res.json({
-    version: config.version,
-    date: config.date,
+    version: config.VERSION,
+    date: config.DATE,
   });
 });
+
+if (config.DEV_MODE){
+  router.get("/test-error", function (req, res, next) {
+    throw new Error("Test error");
+  });
+}
 
 module.exports = router;

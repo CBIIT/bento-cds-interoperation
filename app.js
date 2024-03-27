@@ -1,56 +1,55 @@
 const express = require("express");
-const path = require("path");
-const logger = require("morgan");
-const fs = require("fs");
-const cors = require("cors");
 const graphql = require("./data-management/init-graphql");
-const interoperationRouter = require("./routes/interoperation");
+const healthCheckRouter = require("./routes/healthCheckRouter");
+const {logger} = require("./logger");
+const config = require("./config");
 
-const LOG_FOLDER = "logs";
-if (!fs.existsSync(LOG_FOLDER)) {
-  fs.mkdirSync(LOG_FOLDER);
-}
+let devDomainWhitelist = [
+    "localhost"
+];
+let deployedDomainWhitelist = [
+    "https://caninecommons-dev.cancer.gov",
+    "https://caninecommons-qa.cancer.gov",
+    "https://caninecommons.cancer.gov",
+    "https://dataservice-dev.datacommons.cancer.gov",
+    "https://dataservice-dev2.datacommons.cancer.gov",
+    "https://dataservice-qa.datacommons.cancer.gov",
+    "https://dataservice-qa2.datacommons.cancer.gov",
+    "https://dataservice-stage.datacommons.cancer.gov",
+    "https://dataservice.datacommons.cancer.gov",
+];
+const domainWhitelist = config.DEV_MODE ? devDomainWhitelist+deployedDomainWhitelist : deployedDomainWhitelist;
 
-// create a write stream (in append mode)
-const accessLogStream = fs.createWriteStream(
-  path.join(__dirname, LOG_FOLDER, "access.log"),
-  { flags: "a" }
-);
 
 const app = express();
-app.use(
-  cors({
-    origin: [
-      "http://localhost:3000",
-      "https://caninecommons-dev.cancer.gov",
-      "https://caninecommons-qa.cancer.gov",
-      "https://caninecommons-stage.cancer.gov",
-      "https://caninecommons.cancer.gov",
-      "https://caninecommons-test.cancer.gov",
-    ],
-  })
-);
-
-// setup the logger
-app.use(logger("combined", { stream: accessLogStream }));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 
-app.use("/api/interoperation", interoperationRouter);
+// Check if request is from a whitelisted domain
+app.use((req, res, next) => {
+    const domainName = req.hostname;
+    logger.debug(`Request domain=${domainName}`);
+    logger.debug(`Domain Whitelist=${domainWhitelist}`);
+    if (!domainWhitelist.includes(domainName)){
+        logger.warn(`Request from ${domainName} has been blocked`)
+        res.status(403).send(`Requests to this service are not allowed from your domain (${domainName}). Please contact the systems admins to request that your domain be authorized to access this API.`);
+    }
+    logger.debug("Request allowed");
+    next();
+});
+
+app.use("/api/interoperation", healthCheckRouter);
 app.use("/api/interoperation/graphql", graphql);
 
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next({ status: 404, message: `Path: '${req.path}' is not supported!` });
+app.use((req, res) => {
+    logger.warn(`Request sent to an invalid endpoint (${req.baseUrl}) from ${req.hostname}`)
+    res.status(404).send("Invalid endpoint");
 });
 
-// error handler
-app.use(function (err, req, res, next) {
-  const message = req.app.get("env") === "development" ? err.message : "error";
-
-  // render the error page
-  res.status(err.status || 500);
-  res.json(message);
-});
+app.use((err, req, res, next)=> {
+    const message = 'An error occurred, please see the logs for more information';
+    logger.error(message);
+    logger.error(err.stack);
+    res.status(500).send(message);
+})
 
 module.exports = app;
