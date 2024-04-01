@@ -1,56 +1,40 @@
 const express = require("express");
-const path = require("path");
-const logger = require("morgan");
-const fs = require("fs");
-const cors = require("cors");
 const graphql = require("./data-management/init-graphql");
-const interoperationRouter = require("./routes/interoperation");
+const healthCheckRouter = require("./routes/healthCheckRouter");
 
-const LOG_FOLDER = "logs";
-if (!fs.existsSync(LOG_FOLDER)) {
-  fs.mkdirSync(LOG_FOLDER);
-}
 
-// create a write stream (in append mode)
-const accessLogStream = fs.createWriteStream(
-  path.join(__dirname, LOG_FOLDER, "access.log"),
-  { flags: "a" }
-);
+const domainWhitelist = [
+    "localhost",
+    "https://caninecommons-dev.cancer.gov",
+    "https://caninecommons-qa.cancer.gov",
+    "https://caninecommons.cancer.gov"
+];
 
 const app = express();
-app.use(
-  cors({
-    origin: [
-      "http://localhost:3000",
-      "https://caninecommons-dev.cancer.gov",
-      "https://caninecommons-qa.cancer.gov",
-      "https://caninecommons-stage.cancer.gov",
-      "https://caninecommons.cancer.gov",
-      "https://caninecommons-test.cancer.gov",
-    ],
-  })
-);
-
-// setup the logger
-app.use(logger("combined", { stream: accessLogStream }));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 
-app.use("/api/interoperation", interoperationRouter);
+// Check if request is from a whitelisted domain
+app.use((req, res, next) => {
+    const domainName = req.hostname;
+    if (!domainWhitelist.includes(domainName)){
+        console.warn(`Request from ${domainName} has been blocked`)
+        res.status(403).send(`Requests to this service are not allowed from your domain (${domainName}). Please contact the systems admins to request that your domain be authorized to access this API.`);
+    }
+    next();
+});
+
+app.use("/api/interoperation", healthCheckRouter);
 app.use("/api/interoperation/graphql", graphql);
 
-// catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next({ status: 404, message: `Path: '${req.path}' is not supported!` });
+app.use((req, res) => {
+   res.status(404).send("Invalid endpoint");
 });
 
-// error handler
-app.use(function (err, req, res, next) {
-  const message = req.app.get("env") === "development" ? err.message : "error";
-
-  // render the error page
-  res.status(err.status || 500);
-  res.json(message);
-});
+app.use((err, req, res, next)=> {
+    const message = 'An error occurred, please see logs for more information';
+    console.error(message);
+    console.error(err.stack);
+    res.status(500).send(message);
+})
 
 module.exports = app;

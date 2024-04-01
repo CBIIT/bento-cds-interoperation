@@ -2,8 +2,8 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const config = {
-    VERSION: process.env.VERSION,
-    DATE: process.env.DATE,
+    VERSION: process.env.VERSION || "x.x.x",
+    DATE: process.env.DATE || "xxxx-xx-xx",
     AWS_REGION: process.env.AWS_REGION,
     S3_ACCESS_KEY_ID: process.env.S3_ACCESS_KEY_ID,
     S3_SECRET_ACCESS_KEY: process.env.S3_SECRET_ACCESS_KEY,

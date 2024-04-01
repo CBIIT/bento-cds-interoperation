@@ -58,6 +58,7 @@ type StudyOfProgram {
 }
 
 type QueryType {
+  storeManifestAndGenerateSignedURL(manifestName: String!): String
   studiesByProgram: [StudyOfProgram]
   studyLinks(study_code: String!): [Link]
   storeManifest(manifest: String!): String
