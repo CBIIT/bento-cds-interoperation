@@ -1,5 +1,6 @@
 const app = require("../app");
 const http = require("http");
+const {logger} = require('../logger');
 // configure port
 const port = normalizePort(process.env.PORT || "4030");
 app.set("port", port);
@@ -28,11 +29,11 @@ function onError(error) {
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case "EACCES":
-      console.error(bind + " requires elevated privileges");
+      logger.error(bind + " requires elevated privileges");
       process.exit(1);
       break;
     case "EADDRINUSE":
-      console.error(bind + " is already in use");
+      logger.error(bind + " is already in use");
       process.exit(1);
       break;
     default:
@@ -43,5 +44,5 @@ function onError(error) {
 function onListening() {
   const addr = server.address();
   const bind = typeof addr === "string" ? "pipe " + addr : "port " + addr.port;
-  console.log("Listening on " + bind);
+  logger.log("Listening on " + bind);
 }

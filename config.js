@@ -12,6 +12,7 @@ const config = {
     CLOUDFRONT_PRIVATE_KEY: process.env.CLOUDFRONT_PRIVATE_KEY,
     CLOUDFRONT_DOMAIN: process.env.CLOUDFRONT_DOMAIN,
     SIGNED_URL_EXPIRY_SECONDS: process.env.SIGNED_URL_EXPIRY_SECONDS,
+    LOG_LEVEL: process.env.LOG_LEVEL || "info"
 };
 
 function checkRequiredVariablesAreSet(config) {

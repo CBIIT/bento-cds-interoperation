@@ -7,6 +7,7 @@ const { getSignedUrl } = require("@aws-sdk/cloudfront-signer");
 const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
 const config = require("../config");
 const { errorName } = require("../constants/error-constants");
+const {logger} = require('../logger')
 
 /**
  * Transforms array of JSON strings representing file manifest
@@ -57,7 +58,7 @@ async function uploadManifestToS3(parameters) {
       ),
     });
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return error;
   }
 }
