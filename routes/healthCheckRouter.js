@@ -15,8 +15,10 @@ router.get("/version", function (req, res, next) {
   });
 });
 
-router.get("/error", function (req, res, next) {
-  throw new error("Test error");
-});
+if (config.DEV_MODE){
+  router.get("/test-error", function (req, res, next) {
+    throw new Error("Test error");
+  });
+}
 
 module.exports = router;
