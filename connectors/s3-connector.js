@@ -20,6 +20,7 @@ const {logger} = require('../logger')
  * @throws {Error} - Throws error if file manifest is not an array of JSON strings.
  */
 async function uploadManifestToS3(parameters) {
+
     try {
         const parsedManifest = JSON.parse(parameters.manifest);
         if (!parsedManifest || !Array.isArray(parsedManifest)) {
@@ -40,13 +41,19 @@ async function uploadManifestToS3(parameters) {
         };
 
         const uploadCommand = new PutObjectCommand(uploadParams);
-        const s3Client = new S3Client({
+        let s3Config = {
             region: config.AWS_REGION,
-            credentials: {
-                accessKeyId: config.S3_ACCESS_KEY_ID,
-                secretAccessKey: config.S3_SECRET_ACCESS_KEY,
-            },
-        });
+        };
+        if (config.DEV_MODE){
+            s3Config = {
+                ...s3Config,
+                credentials: {
+                    accessKeyId: config.S3_ACCESS_KEY_ID,
+                    secretAccessKey: config.S3_SECRET_ACCESS_KEY,
+                }
+            };
+        }
+        const s3Client = new S3Client(s3Config);
         await s3Client.send(uploadCommand);
 
         return getSignedUrl({
@@ -63,4 +70,3 @@ async function uploadManifestToS3(parameters) {
     }
 }
 
-module.exports = {uploadManifestToS3};

@@ -1,12 +1,10 @@
 const dotenv = require("dotenv");
 dotenv.config();
 
-const config = {
+let required_config = {
     VERSION: process.env.VERSION || "x.x.x",
     DATE: process.env.DATE || "xxxx-xx-xx",
     AWS_REGION: process.env.AWS_REGION,
-    S3_ACCESS_KEY_ID: process.env.S3_ACCESS_KEY_ID,
-    S3_SECRET_ACCESS_KEY: process.env.S3_SECRET_ACCESS_KEY,
     FILE_MANIFEST_BUCKET_NAME: process.env.FILE_MANIFEST_BUCKET_NAME,
     CLOUDFRONT_KEY_PAIR_ID: process.env.CLOUDFRONT_KEY_PAIR_ID,
     CLOUDFRONT_PRIVATE_KEY: process.env.CLOUDFRONT_PRIVATE_KEY,
@@ -16,6 +14,11 @@ const config = {
     PORT: validatePort(process.env.PORT) || "4030",
     DEV_MODE: process.env.NODE_ENV === "development"
 };
+const dev_config = {
+    S3_ACCESS_KEY_ID: process.env.S3_ACCESS_KEY_ID,
+    S3_SECRET_ACCESS_KEY: process.env.S3_SECRET_ACCESS_KEY,
+}
+const config = required_config.DEV_MODE ? {...required_config, ...dev_config} : required_config;
 
 function validatePort(port){
     return isNaN(port) || Number(port) < 0 ? null : port;

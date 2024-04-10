@@ -12,3 +12,7 @@ class S3Service{
         });
     }
 }
+
+module.exports = {
+    S3Service
+};
