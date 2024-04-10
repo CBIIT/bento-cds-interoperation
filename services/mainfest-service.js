@@ -35,7 +35,7 @@ class ManifestService{
         catch (error) {
             const message = "An error occurred while parsing the manifest data";
             logger.error(message);
-            logger.error(error);
+            logger.debug(error);
             throw new Error(message);
         }
         try {
@@ -50,7 +50,7 @@ class ManifestService{
         catch (error) {
             const message = "An error occurred while uploading the manifest to the S3 bucket";
             logger.error(message);
-            logger.error(error);
+            logger.debug(error);
             throw new Error(message);
         }
         try {
@@ -66,7 +66,7 @@ class ManifestService{
         catch (error) {
             const message = "An error occurred while requesting the signed URL for the manifest";
             logger.error(message);
-            logger.error(error);
+            logger.debug(error);
             throw new Error(message);
         }
     }

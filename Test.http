@@ -13,3 +13,9 @@ Accept: application/json
 ### Error Test endpoint
 GET localhost:8080/api/interoperation/error
 Accept: application/json
+
+### store manifest test
+POST localhost:8080/api/interoperation/graphql
+Content-Type: application/json
+
+{"query":"query storeManifest(\n    $manifestString: String!\n){\n    storeManifest(manifest: $manifestString)\n}","variables":{"manifestString":"[{\"header1\": \"one\", \"header2\": \"2\"}]"}}
