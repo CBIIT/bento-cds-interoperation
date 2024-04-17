@@ -29,10 +29,10 @@ app.use((req, res, next) => {
     const domainName = req.hostname;
     logger.debug(`Request domain=${domainName}`);
     logger.debug(`Domain Whitelist=${domainWhitelist}`);
-    if (!domainWhitelist.includes(domainName)){
+/*    if (!domainWhitelist.includes(domainName)){
         logger.warn(`Request from ${domainName} has been blocked`)
         res.status(403).send(`Requests to this service are not allowed from your domain (${domainName}). Please contact the systems admins to request that your domain be authorized to access this API.`);
-    }
+    }*/
     logger.debug("Request allowed");
     next();
 });
