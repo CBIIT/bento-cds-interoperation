@@ -10,7 +10,13 @@ let devDomainWhitelist = [
 let deployedDomainWhitelist = [
     "https://caninecommons-dev.cancer.gov",
     "https://caninecommons-qa.cancer.gov",
-    "https://caninecommons.cancer.gov"
+    "https://caninecommons.cancer.gov",
+    "https://dataservice-dev.datacommons.cancer.gov",
+    "https://dataservice-dev2.datacommons.cancer.gov",
+    "https://dataservice-qa.datacommons.cancer.gov",
+    "https://dataservice-qa2.datacommons.cancer.gov",
+    "https://dataservice-stage.datacommons.cancer.gov",
+    "https://dataservice.datacommons.cancer.gov",
 ];
 const domainWhitelist = config.DEV_MODE ? devDomainWhitelist+deployedDomainWhitelist : deployedDomainWhitelist;
 
