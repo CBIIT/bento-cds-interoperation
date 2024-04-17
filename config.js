@@ -9,7 +9,7 @@ let required_config = {
     CLOUDFRONT_KEY_PAIR_ID: process.env.CLOUDFRONT_KEY_PAIR_ID,
     CLOUDFRONT_PRIVATE_KEY: process.env.CLOUDFRONT_PRIVATE_KEY,
     CLOUDFRONT_DOMAIN: process.env.CLOUDFRONT_DOMAIN,
-    SIGNED_URL_EXPIRY_SECONDS: process.env.SIGNED_URL_EXPIRY_SECONDS,
+    SIGNED_URL_EXPIRY_SECONDS: process.env.SIGNED_URL_EXPIRY_SECONDS || 600,
     LOG_LEVEL: process.env.LOG_LEVEL || "info",
     PORT: validatePort(process.env.PORT) || "4030",
     DEV_MODE: process.env.NODE_ENV === "development"
