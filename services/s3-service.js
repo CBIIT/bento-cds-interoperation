@@ -3,13 +3,16 @@ const config = require("../config");
 
 class S3Service{
     constructor() {
-        this.s3Client = new S3Client({
+        let s3Config = {
             region: config.AWS_REGION,
-            credentials: {
+        };
+        if (config.S3_ACCESS_KEY_ID && config.S3_SECRET_ACCESS_KEY){
+            config["credentials"] = {
                 accessKeyId: config.S3_ACCESS_KEY_ID,
                 secretAccessKey: config.S3_SECRET_ACCESS_KEY,
-            },
-        });
+            }
+        }
+        this.s3Client = new S3Client(s3Config);
     }
 }
 
