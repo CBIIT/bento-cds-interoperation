@@ -1,6 +1,5 @@
 const { buildSchema } = require("graphql");
 const { createHandler } = require("graphql-http/lib/use/express");
-const { uploadManifestToS3 } = require("../connectors/s3-connector");
 const {ManifestService} = require("../services/mainfest-service");
 const {S3Service} = require("../services/s3-service");
 
