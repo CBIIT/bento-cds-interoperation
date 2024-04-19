@@ -68,7 +68,7 @@ class ManifestService{
             const message = "An error occurred while requesting the signed URL for the manifest";
             logger.error(message);
             logger.debug(error);
-            throw new Error(message);
+            throw new Error(message + "--" + error);
         }
     }
 
