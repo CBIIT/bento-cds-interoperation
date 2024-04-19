@@ -58,7 +58,7 @@ class ManifestService{
             return getSignedUrl({
                 keyPairId: config.CLOUDFRONT_KEY_PAIR_ID,
                 privateKey: config.CLOUDFRONT_PRIVATE_KEY,
-                url: `${config.CLOUDFRONT_DOMAIN}/${tempCsvFile}`,
+                url: `${config.CLOUDFRONT_DOMAIN}/${tempCsvFileName}`,
                 dateLessThan: new Date(
                     Date.now() + 1000 * config.SIGNED_URL_EXPIRY_SECONDS
                 ),
