@@ -8,6 +8,7 @@ const {promises: fs} = require("fs");
 const config = require("../config");
 const {PutObjectCommand} = require("@aws-sdk/client-s3");
 const {getSignedUrl} = require("@aws-sdk/cloudfront-signer");
+const {errors} = require("json-2-csv/lib/constants");
 
 
 class ManifestService{
@@ -51,7 +52,7 @@ class ManifestService{
             const message = "An error occurred while uploading the manifest to the S3 bucket";
             logger.error(message);
             logger.debug(error);
-            throw new Error(message);
+            throw new Error(message+"~~"+error);
         }
         try {
             return getSignedUrl({
