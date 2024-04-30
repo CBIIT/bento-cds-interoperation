@@ -24,6 +24,8 @@ const domainWhitelist = config.DEV_MODE ? devDomainWhitelist+deployedDomainWhite
 const app = express();
 app.use(express.json());
 
+app.use("/api/interoperation", healthCheckRouter);
+
 // Check if request is from a whitelisted domain
 app.use((req, res, next) => {
     const domainName = req.hostname;
@@ -36,8 +38,6 @@ app.use((req, res, next) => {
     logger.debug("Request allowed");
     next();
 });
-
-app.use("/api/interoperation", healthCheckRouter);
 app.use("/api/interoperation/graphql", graphql);
 
 app.use((req, res) => {
