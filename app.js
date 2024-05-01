@@ -8,15 +8,15 @@ let devDomainWhitelist = [
     "localhost"
 ];
 let deployedDomainWhitelist = [
-    "https://caninecommons-dev.cancer.gov",
-    "https://caninecommons-qa.cancer.gov",
-    "https://caninecommons.cancer.gov",
-    "https://dataservice-dev.datacommons.cancer.gov",
-    "https://dataservice-dev2.datacommons.cancer.gov",
-    "https://dataservice-qa.datacommons.cancer.gov",
-    "https://dataservice-qa2.datacommons.cancer.gov",
-    "https://dataservice-stage.datacommons.cancer.gov",
-    "https://dataservice.datacommons.cancer.gov",
+    "caninecommons-dev.cancer.gov",
+    "caninecommons-qa.cancer.gov",
+    "caninecommons.cancer.gov",
+    "dataservice-dev.datacommons.cancer.gov",
+    "dataservice-dev2.datacommons.cancer.gov",
+    "dataservice-qa.datacommons.cancer.gov",
+    "dataservice-qa2.datacommons.cancer.gov",
+    "dataservice-stage.datacommons.cancer.gov",
+    "dataservice.datacommons.cancer.gov",
 ];
 const domainWhitelist = config.DEV_MODE ? devDomainWhitelist+deployedDomainWhitelist : deployedDomainWhitelist;
 
