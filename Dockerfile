@@ -1,6 +1,6 @@
 #ARG ECR_REPO
-#FROM ${ECR_REPO}/base-images:node-16.17.0
-FROM node:16.17.0-alpine3.16
+#FROM ${ECR_REPO}/base-images:20.11.1
+FROM node:20.11.1-alpine3.19
 ENV PORT 4030
 ENV NODE_ENV production
 WORKDIR /usr/src/app
