@@ -22,7 +22,7 @@ const domainWhitelist = config.DEV_MODE ? devDomainWhitelist+deployedDomainWhite
 
 
 const app = express();
-app.use(express.json());
+app.use(express.json({limit: "1gb"}));
 
 app.use("/api/interoperation", healthCheckRouter);
 
