@@ -17,6 +17,11 @@ let deployedDomainWhitelist = [
     "dataservice-qa2.datacommons.cancer.gov",
     "dataservice-stage.datacommons.cancer.gov",
     "dataservice.datacommons.cancer.gov",
+    "ccdi-sandbox.cancer.gov",
+    "ccdi-dev.cancer.gov",
+    "ccdi-qa.cancer.gov",
+    "ccdi-stage.cancer.gov",
+    "ccdi.cancer.gov",
 ];
 const domainWhitelist = config.DEV_MODE ? devDomainWhitelist+deployedDomainWhitelist : deployedDomainWhitelist;
 
