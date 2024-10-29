@@ -20,7 +20,7 @@ const dev_config = {
 }
 const config = required_config.DEV_MODE ? {...required_config, ...dev_config} : required_config;
 
-console.log(config);
+console.log(config)
 
 function validatePort(port){
     return isNaN(port) || Number(port) < 0 ? null : port;
