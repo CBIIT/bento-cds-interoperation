@@ -44,12 +44,16 @@ class ManifestService{
                 Key: tempCsvFileName,
                 Body: await fs.readFile(tempCsvFilePath, {encoding: "utf-8"}),
             };
+            logger.info("Bucket name: " + config.FILE_MANIFEST_BUCKET_NAME);
+            logger.info("File name: " + tempCsvFileName);
+            logger.info("File path: " + tempCsvFilePath);
             const uploadCommand = new PutObjectCommand(uploadParams);
             await this.s3Client.send(uploadCommand);
         }
         catch (error) {
             const message = "An error occurred while uploading the manifest to the S3 bucket";
             logger.error(message);
+            logger.error(error);
             logger.debug(error);
             throw new Error(message);
         }
