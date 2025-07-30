@@ -17,18 +17,33 @@ class ManifestService{
     }
 
     async uploadManifestToS3(parameters) {
-        let tempCsvFileName;
-        let tempCsvFilePath;
+        let tempFileName;
+        let tempFilePath;
+        let manifest;
         try {
             // validate input JSON data
-            const manifestJSON = JSON.parse(parameters?.manifest);
-            if (!manifestJSON || !Array.isArray(manifestJSON)) {
-                throw new Error(ERROR.MALFORMED_FILE_MANIFEST);
+            const manifestType = parameters?.type;
+            // check if manifest is JSON or CSV
+            if (!manifestType || manifestType !== "json") {
+                // treat as CSV
+                const manifestJSON = JSON.parse(parameters?.manifest);
+                if (!manifestJSON || !Array.isArray(manifestJSON)) {
+                    throw new Error(ERROR.MALFORMED_FILE_MANIFEST);
+                }
+                manifest = await converter.json2csv(manifestJSON);
+                tempFileName = `${randomUUID()}.csv`;
+                tempFilePath = path.join(os.tmpdir(), tempFileName);
+            } else {
+                // treat as JSON
+                manifest = parameters?.manifest;
+                // check if manifest is valid JSON
+                if (manifest === undefined || manifest === null || manifest === "") {
+                    throw new Error(ERROR.MALFORMED_FILE_MANIFEST);
+                }
+                tempFileName = `${randomUUID()}.json`;
+                tempFilePath = path.join(os.tmpdir(), tempFileName);
             }
-            const manifestCSV = await converter.json2csv(manifestJSON);
-            tempCsvFileName = `${randomUUID()}.csv`;
-            tempCsvFilePath = path.join(os.tmpdir(), tempCsvFileName);
-            await fs.writeFile(tempCsvFilePath, manifestCSV, {
+            await fs.writeFile(tempFilePath, manifest, {
                 encoding: "utf-8",
             });
         }
@@ -41,8 +56,8 @@ class ManifestService{
         try {
             const uploadParams = {
                 Bucket: config.FILE_MANIFEST_BUCKET_NAME,
-                Key: tempCsvFileName,
-                Body: await fs.readFile(tempCsvFilePath, {encoding: "utf-8"}),
+                Key: tempFileName,
+                Body: await fs.readFile(tempFilePath, {encoding: "utf-8"}),
             };
             const uploadCommand = new PutObjectCommand(uploadParams);
             await this.s3Client.send(uploadCommand);
@@ -57,7 +72,7 @@ class ManifestService{
             return getSignedUrl({
                 keyPairId: config.CLOUDFRONT_KEY_PAIR_ID,
                 privateKey: config.CLOUDFRONT_PRIVATE_KEY,
-                url: `${config.CLOUDFRONT_DOMAIN}/${tempCsvFileName}`,
+                url: `${config.CLOUDFRONT_DOMAIN}/${tempFileName}`,
                 dateLessThan: new Date(
                     Date.now() + (1000 * config.SIGNED_URL_EXPIRY_SECONDS)
                 ),

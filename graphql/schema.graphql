@@ -3,5 +3,6 @@ schema {
 }
 
 type QueryType {
-  storeManifest(manifest: String!): String
+  # add type to manifest payload
+  storeManifest(manifest: String!, type: String!): String
 }
