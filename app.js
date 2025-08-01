@@ -8,6 +8,7 @@ let devDomainWhitelist = [
     "localhost"
 ];
 let deployedDomainWhitelist = [
+    "localhost",
     "caninecommons-dev.cancer.gov",
     "caninecommons-qa.cancer.gov",
     "caninecommons.cancer.gov",
@@ -51,6 +52,10 @@ app.use((req, res, next) => {
         res.status(403).send(`Requests to this service are not allowed from your domain (${domainName}). Please contact the systems admins to request that your domain be authorized to access this API.`);
     }
     logger.debug("Request allowed");
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
     next();
 });
 app.use("/api/interoperation/graphql", graphql);
