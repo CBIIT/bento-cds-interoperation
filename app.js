@@ -1,5 +1,5 @@
 const express = require("express");
-const cors = require("cors");
+// const cors = require("cors");
 const graphql = require("./data-management/init-graphql");
 const healthCheckRouter = require("./routes/healthCheckRouter");
 const {logger} = require("./logger");
@@ -38,17 +38,6 @@ let deployedDomainWhitelist = [
 const domainWhitelist = config.DEV_MODE ? devDomainWhitelist+deployedDomainWhitelist : deployedDomainWhitelist;
 
 const app = express();
-app.use(cors({
-    origin: function(origin, callback){
-        if (domainWhitelist.indexOf(origin) !== -1) {
-            callback(null, true)
-        } else {
-            callback(new Error("Not allowed by CORS"))
-        }
-    },
-    methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-}));
 app.use(express.json({limit: "1gb"}));
 
 app.use("/api/interoperation", healthCheckRouter);
@@ -65,6 +54,18 @@ app.use("/api/interoperation", healthCheckRouter);
 //     logger.debug("Request allowed");
 //     next();
 // });
+app.use(function (req, res, next) {
+    // if (domainWhitelist.indexOf(req.headers.origin) !== -1) {
+    //   res.header('Access-Control-Allow-Origin', req.headers.origin);
+    // }
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE");
+    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
+
+    if (next) {
+        next();
+    }
+});
 app.use("/api/interoperation/graphql", graphql);
 
 app.use((req, res) => {
