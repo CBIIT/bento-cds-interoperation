@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const graphql = require("./data-management/init-graphql");
 const healthCheckRouter = require("./routes/healthCheckRouter");
 const {logger} = require("./logger");
@@ -8,6 +9,7 @@ let devDomainWhitelist = [
     "localhost"
 ];
 let deployedDomainWhitelist = [
+    "localhost",
     "caninecommons-dev.cancer.gov",
     "caninecommons-qa.cancer.gov",
     "caninecommons.cancer.gov",
@@ -35,24 +37,34 @@ let deployedDomainWhitelist = [
 ];
 const domainWhitelist = config.DEV_MODE ? devDomainWhitelist+deployedDomainWhitelist : deployedDomainWhitelist;
 
-
 const app = express();
+app.use(cors({
+    origin: function(origin, callback){
+        if (domainWhitelist.indexOf(origin) !== -1) {
+            callback(null, true)
+        } else {
+            callback(new Error("Not allowed by CORS"))
+        }
+    },
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+}));
 app.use(express.json({limit: "1gb"}));
 
 app.use("/api/interoperation", healthCheckRouter);
 
 // Check if request is from a whitelisted domain
-app.use((req, res, next) => {
-    const domainName = req.hostname;
-    logger.debug(`Request domain=${domainName}`);
-    logger.debug(`Domain Whitelist=${domainWhitelist}`);
-    if (!domainWhitelist.includes(domainName)){
-        logger.warn(`Request from ${domainName} has been blocked`)
-        res.status(403).send(`Requests to this service are not allowed from your domain (${domainName}). Please contact the systems admins to request that your domain be authorized to access this API.`);
-    }
-    logger.debug("Request allowed");
-    next();
-});
+// app.use((req, res, next) => {
+//     const domainName = req.hostname;
+//     logger.debug(`Request domain=${domainName}`);
+//     logger.debug(`Domain Whitelist=${domainWhitelist}`);
+//     if (!domainWhitelist.includes(domainName)){
+//         logger.warn(`Request from ${domainName} has been blocked`)
+//         res.status(403).send(`Requests to this service are not allowed from your domain (${domainName}). Please contact the systems admins to request that your domain be authorized to access this API.`);
+//     }
+//     logger.debug("Request allowed");
+//     next();
+// });
 app.use("/api/interoperation/graphql", graphql);
 
 app.use((req, res) => {
