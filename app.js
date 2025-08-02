@@ -9,7 +9,6 @@ let devDomainWhitelist = [
     "localhost"
 ];
 let deployedDomainWhitelist = [
-    "localhost",
     "caninecommons-dev.cancer.gov",
     "caninecommons-qa.cancer.gov",
     "caninecommons.cancer.gov",
