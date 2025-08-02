@@ -1,5 +1,6 @@
 const express = require("express");
-const graphql = require("./data-management/init-graphql");
+const cors = require("cors");
+const graphqlRouter = require("./routes/graphqlRouter");
 const healthCheckRouter = require("./routes/healthCheckRouter");
 const {logger} = require("./logger");
 const config = require("./config");
@@ -36,35 +37,69 @@ let deployedDomainWhitelist = [
 ];
 const domainWhitelist = config.DEV_MODE ? devDomainWhitelist+deployedDomainWhitelist : deployedDomainWhitelist;
 
-
 const app = express();
+
+// CORS configuration for GraphQL endpoint
+const corsOptions = {
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    const domainName = origin.replace(/^https?:\/\//, '').replace(/:\d+$/, '');
+    logger.debug(`CORS check for origin=${origin}, domain=${domainName}`);
+    console.log(domainName);
+    if (domainWhitelist.includes(domainName)) {
+      callback(null, true);
+    } else {
+      logger.warn(`CORS blocked request from ${origin}`);
+      callback(new Error(`Not allowed by CORS: ${origin}`));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  optionsSuccessStatus: 200 // Some legacy browsers choke on 204
+};
+
+// Apply CORS middleware before other middleware
+app.use(cors(corsOptions));
+
+// Body parser middleware
 app.use(express.json({limit: "1gb"}));
 
+// Health check route
 app.use("/api/interoperation", healthCheckRouter);
 
-// Check if request is from a whitelisted domain
+// Domain whitelist check middleware (for non-GraphQL routes)
 app.use((req, res, next) => {
+    // Skip domain check for GraphQL endpoint as it's handled by CORS
+    if (req.path === '/api/interoperation/graphql') {
+        return next();
+    }
+    
     const domainName = req.hostname;
     logger.debug(`Request domain=${domainName}`);
     logger.debug(`Domain Whitelist=${domainWhitelist}`);
     if (!domainWhitelist.includes(domainName)){
         logger.warn(`Request from ${domainName} has been blocked`)
         res.status(403).send(`Requests to this service are not allowed from your domain (${domainName}). Please contact the systems admins to request that your domain be authorized to access this API.`);
+        return;
     }
     logger.debug("Request allowed");
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS");
-    res.header("Access-Control-Allow-Headers", "Content-Type, Authorization");
-
+    
     next();
 });
-app.use("/api/interoperation/graphql", graphql);
 
+// GraphQL endpoint with proper CORS handling
+app.use("/api/interoperation/graphql", graphqlRouter);
+
+// 404 handler
 app.use((req, res) => {
     logger.warn(`Request sent to an invalid endpoint (${req.baseUrl}) from ${req.hostname}`)
     res.status(404).send("Invalid endpoint");
 });
 
+// Error handler
 app.use((err, req, res, next)=> {
     const message = 'An error occurred, please see the logs for more information';
     logger.error(message);
