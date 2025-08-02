@@ -16,17 +16,15 @@ class ManifestService{
         this.s3Client = s3Client;
     }
 
-    async uploadManifestToS3(parameters) {
+    async uploadManifestToS3(manifest, manifestType) {
         let tempFileName;
         let tempFilePath;
-        let manifest;
+        console.log(manifest, manifestType);
         try {
-            // validate input JSON data
-            const manifestType = parameters?.type;
             // check if manifest is JSON or CSV
             if (!manifestType || manifestType !== "json") {
                 // treat as CSV
-                const manifestJSON = JSON.parse(parameters?.manifest);
+                const manifestJSON = JSON.parse(manifest);
                 if (!manifestJSON || !Array.isArray(manifestJSON)) {
                     throw new Error(ERROR.MALFORMED_FILE_MANIFEST);
                 }
@@ -34,8 +32,6 @@ class ManifestService{
                 tempFileName = `${randomUUID()}.csv`;
                 tempFilePath = path.join(os.tmpdir(), tempFileName);
             } else {
-                // treat as JSON
-                manifest = parameters?.manifest;
                 // check if manifest is valid JSON
                 if (manifest === undefined || manifest === null || manifest === "") {
                     throw new Error(ERROR.MALFORMED_FILE_MANIFEST);
