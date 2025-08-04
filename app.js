@@ -46,7 +46,6 @@ const corsOptions = {
     
     const domainName = origin.replace(/^https?:\/\//, '').replace(/:\d+$/, '');
     logger.debug(`CORS check for origin=${origin}, domain=${domainName}`);
-    console.log(domainName);
     if (domainWhitelist.includes(domainName)) {
       callback(null, true);
     } else {

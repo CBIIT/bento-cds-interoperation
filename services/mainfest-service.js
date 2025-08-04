@@ -19,7 +19,6 @@ class ManifestService{
     async uploadManifestToS3(manifest, manifestType) {
         let tempFileName;
         let tempFilePath;
-        console.log(manifest, manifestType);
         try {
             // check if manifest is JSON or CSV
             if (!manifestType || manifestType !== "json") {
