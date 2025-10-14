@@ -41,17 +41,18 @@ FROM node:24-alpine3.20 AS fnl_base_image
 # Copy the compiled OpenSSL 3.5.4 from builder stage
 COPY --from=openssl-builder /usr/local/openssl /usr/local/openssl
 
-# Update library paths to use the new OpenSSL
-ENV LD_LIBRARY_PATH="/usr/local/openssl/lib:/usr/local/openssl/lib64"
-ENV PATH="/usr/local/openssl/bin:${PATH}"
-ENV PKG_CONFIG_PATH="/usr/local/openssl/lib/pkgconfig"
-
-# Update system packages and ensure our OpenSSL is preferred
-RUN ln -sf /usr/local/openssl/bin/openssl /usr/bin/openssl && \
+# Install zlib runtime library required by OpenSSL and create symlinks
+RUN apk add --no-cache zlib && \
+    ln -sf /usr/local/openssl/bin/openssl /usr/bin/openssl && \
     ln -sf /usr/local/openssl/lib/libssl.so.3 /usr/lib/libssl.so.3 && \
     ln -sf /usr/local/openssl/lib/libcrypto.so.3 /usr/lib/libcrypto.so.3 && \
     # Update library cache
     echo "/usr/local/openssl/lib" > /etc/ld-musl-x86_64.path
+
+# Update library paths to use the new OpenSSL
+ENV LD_LIBRARY_PATH="/usr/local/openssl/lib:/usr/local/openssl/lib64"
+ENV PATH="/usr/local/openssl/bin:${PATH}"
+ENV PKG_CONFIG_PATH="/usr/local/openssl/lib/pkgconfig"
 
 ENV PORT=4030
 ENV NODE_ENV=production
