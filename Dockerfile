@@ -45,11 +45,9 @@ COPY --from=openssl-builder /usr/local/openssl /usr/local/openssl
 RUN apk add --no-cache zlib && \
     ln -sf /usr/local/openssl/bin/openssl /usr/bin/openssl && \
     ln -sf /usr/local/openssl/lib/libssl.so.3 /usr/lib/libssl.so.3 && \
-    ln -sf /usr/local/openssl/lib/libcrypto.so.3 /usr/lib/libcrypto.so.3 && \
-    # Update library cache
-    echo "/usr/local/openssl/lib" > /etc/ld-musl-x86_64.path
+    ln -sf /usr/local/openssl/lib/libcrypto.so.3 /usr/lib/libcrypto.so.3
 
-# Update library paths to use the new OpenSSL
+# Update library paths to use the new OpenSSL (must be set before using OpenSSL)
 ENV LD_LIBRARY_PATH="/usr/local/openssl/lib:/usr/local/openssl/lib64"
 ENV PATH="/usr/local/openssl/bin:${PATH}"
 ENV PKG_CONFIG_PATH="/usr/local/openssl/lib/pkgconfig"
@@ -59,7 +57,7 @@ ENV NODE_ENV=production
 WORKDIR /usr/src/app
 
 # Verify OpenSSL version (should show 3.5.4)
-RUN /usr/local/openssl/bin/openssl version
+RUN openssl version
 
 # Remove vulnerable cross-spawn
 RUN rm -rf /usr/local/lib/node_modules/npm/node_modules/cross-spawn || true
