@@ -9,7 +9,9 @@ RUN apk upgrade --no-cache busybox \
   && rm -rf /usr/local/lib/node_modules/npm/node_modules/cross-spawn
 COPY package*.json ./
 #RUN npm ci --only=production
-RUN npm install
+RUN npm install --omit=dev \
+  && npm cache clean --force \
+  && rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
 COPY  --chown=node:node . .
 EXPOSE 4030
 CMD [ "node", "./bin/www" ]
