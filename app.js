@@ -34,7 +34,7 @@ let deployedDomainWhitelist = [
     "general-stage.datacommons.cancer.gov",
     "general.datacommons.cancer.gov",
 ];
-const domainWhitelist = config.DEV_MODE ? devDomainWhitelist+deployedDomainWhitelist : deployedDomainWhitelist;
+const domainWhitelist = config.DEV_MODE ? devDomainWhitelist+deployedDomainWhitelist : devDomainWhitelist+deployedDomainWhitelist;
 
 const app = express();
 
