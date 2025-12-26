@@ -7,7 +7,8 @@
     "devStart": "nodemon ./bin/www",
     "start": "node ./bin/www",
     "debug": "./node_modules/.bin/nodemon --inspect ./bin/www",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "vitest",
+    "test:ci": "TZ=UTC CI=true vitest --reporter verbose --coverage --maxConcurrency=2"
   },
   "keywords": [],
   "author": "",
@@ -32,7 +33,10 @@
     "redis": "^4.6.5"
   },
   "devDependencies": {
+    "@vitest/coverage-v8": "^4.0.15",
     "jest": "^30.2.0",
-    "nodemon": "^3.1.0"
+    "nodemon": "^3.1.0",
+    "supertest": "^7.1.4",
+    "vitest": "^4.0.15"
   }
 }
