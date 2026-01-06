@@ -1,12 +1,12 @@
 #ARG ECR_REPO
 #FROM ${ECR_REPO}/base-images:20.11.1
-FROM node:24.10.0-alpine3.22 as fnl_base_image
+FROM node:22-alpine as fnl_base_image
 ENV PORT 4030
 ENV NODE_ENV production
 WORKDIR /usr/src/app
-RUN apk upgrade --no-cache busybox \
-  && npm install -g npm@10.9.2 \
-  && rm -rf /usr/local/lib/node_modules/npm/node_modules/cross-spawn
+RUN apk upgrade --no-cache openssl
+RUN npm install -g npm@11.7.0
+RUN rm -rf /usr/local/lib/node_modules/npm/node_modules/cross-spawn
 COPY package*.json ./
 #RUN npm ci --only=production
 RUN npm install --omit=dev \
