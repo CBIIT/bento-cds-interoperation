@@ -3,7 +3,7 @@ ENV PORT 4030
 ENV NODE_ENV production
 WORKDIR /usr/src/app
 RUN apk update && apk upgrade --no-cache && \
-    apk add --no-cache openssl>=3.5.5-r0
+    apk add --no-cache --repository=https://dl-cdn.alpinelinux.org/alpine/edge/main openssl>=3.6.1-r0
 RUN npm install -g npm@11.7.0
 RUN rm -rf /usr/local/lib/node_modules/npm/node_modules/cross-spawn
 COPY package*.json ./
