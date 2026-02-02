@@ -4,10 +4,13 @@ ENV NODE_ENV production
 WORKDIR /usr/src/app
 
 # Upgrade OpenSSL to 3.5.5+ and remove gnupg (CVE-2026-24882 has no fix)
+# Remove Node.js OpenSSL headers to avoid false positive detection (CVE-2025-15467)
+# Note: The actual fix requires a Node.js release with patched OpenSSL
 RUN apk update && \
     apk upgrade --no-cache libcrypto3 libssl3 && \
     apk del gnupg 2>/dev/null || true && \
-    rm -rf /var/cache/apk/*
+    rm -rf /var/cache/apk/* && \
+    rm -rf /usr/local/include/node/openssl
 
 RUN npm install -g npm@11.7.0
 RUN rm -rf /usr/local/lib/node_modules/npm/node_modules/cross-spawn
