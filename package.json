@@ -42,7 +42,7 @@
   "overrides": {
     "qs": "6.14.2",
     "glob": "11.1.0",
-    "fast-xml-parser": "5.3.8",
+    "fast-xml-parser": "5.5.7",
     "@smithy/config-resolver": ">=4.4.0"
   }
 }
