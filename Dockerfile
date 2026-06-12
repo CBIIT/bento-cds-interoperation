@@ -1,4 +1,4 @@
-FROM node:25.5.0-alpine3.22 AS fnl_base_image
+FROM node:25.8.2-alpine3.22 AS fnl_base_image
 ENV PORT 4030
 ENV NODE_ENV production
 WORKDIR /usr/src/app
@@ -8,7 +8,7 @@ WORKDIR /usr/src/app
 # Upgrade zlib and busybox to patch CVEs
 # Note: The actual fix requires a Node.js release with patched OpenSSL
 RUN apk update && \
-    apk upgrade --no-cache libcrypto3 libssl3 zlib busybox busybox-binsh ssl_client && \
+    apk upgrade --no-cache libcrypto3 libssl3 zlib busybox busybox-binsh ssl_client musl musl-utils && \
     apk del gnupg 2>/dev/null || true && \
     rm -rf /var/cache/apk/* && \
     rm -rf /usr/local/include/node/openssl
