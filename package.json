@@ -14,8 +14,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.701.0",
-    "@aws-sdk/cloudfront-signer": "^3.329.0",
+    "@aws-sdk/client-s3": "^3.1058.0",
+    "@aws-sdk/cloudfront-signer": "^3.1058.0",
     "cors": "^2.8.5",
     "cross-spawn": "7.0.6",
     "dotenv": "^16.0.3",
@@ -40,6 +40,8 @@
     "supertest": "^7.0.0"
   },
   "overrides": {
+    "path-to-regexp": "0.1.13",
+    "uuid": "14.0.0",
     "qs": "6.14.2",
     "glob": "11.1.0",
     "fast-xml-parser": "5.5.7",
