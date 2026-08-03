@@ -1,6 +1,6 @@
-FROM node:25.8.2-alpine3.22 AS fnl_base_image
-ENV PORT 4030
-ENV NODE_ENV production
+FROM node:25-alpine AS fnl_base_image
+ENV PORT=4030
+ENV NODE_ENV=production
 WORKDIR /usr/src/app
 
 # Upgrade OpenSSL to 3.5.5+ and remove gnupg (CVE-2026-24882 has no fix)
