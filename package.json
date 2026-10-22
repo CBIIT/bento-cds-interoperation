@@ -46,6 +46,7 @@
     "qs": "6.15.3",
     "glob": "11.1.0",
     "fast-xml-parser": "5.10.1",
-    "@smithy/config-resolver": ">=4.4.0"
+    "@smithy/config-resolver": ">=4.4.0",
+    "proxy-addr": "2.0.8"
   }
 }
