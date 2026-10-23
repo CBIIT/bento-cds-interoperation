@@ -1,0 +1,29 @@
+JIRA Work Summary — bento-cds-interoperation
+Period: Oct 22–23, 2026
+Author: shawnwangnih
+
+SUMMARY
+Addressed October 2026 security/CVE findings in the bento-cds-interoperation
+service and hardened the Docker build. Delivered via PR #25 "fix issues"
+(branch: fix-cve-oct-2026 -> base: ccdi-1.2.0). Reviewed by David-YuWei and
+merged on Oct 23, 2026.
+
+WHAT I DID
+- Remediated a vulnerable transitive dependency: pinned/overrode proxy-addr to
+  2.0.8 (up from 2.0.7) via a dependency override in package.json.
+- Regenerated package-lock.json so the lockfile resolves proxy-addr to 2.0.8,
+  ensuring clean lockfile-based installs match the override (addressed code
+  review feedback that the lockfile still pointed to 2.0.7).
+- Added a .dockerignore to exclude non-build/sensitive files from the Docker
+  build context (node_modules, .git, .env/.env.*, .github, .vscode, *.md,
+  Dockerfile, coverage, Test.http, etc.), reducing image size and leak risk.
+
+DETAILS
+- PR: #25 "fix issues"
+  https://github.com/CBIIT/bento-cds-interoperation/pull/25
+- Branch: fix-cve-oct-2026  ->  Base: ccdi-1.2.0
+- Commits: 2 | Files changed: 3 | +23 / -4
+  * fix issues (proxy-addr override + .dockerignore)
+  * Regenerate lockfile for proxy-addr override
+- Status: Merged Oct 23, 2026 12:53 UTC
+- Reviewer: David-YuWei
