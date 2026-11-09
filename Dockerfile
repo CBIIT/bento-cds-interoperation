@@ -1,25 +1,26 @@
-FROM node:25-alpine AS fnl_base_image
+FROM node:22-alpine AS deps
+WORKDIR /usr/src/app
+ENV NODE_ENV=production
+
+COPY package*.json ./
+RUN npm ci --omit=dev \
+  && npm cache clean --force
+
+FROM node:22-alpine AS runner
 ENV PORT=4030
 ENV NODE_ENV=production
 WORKDIR /usr/src/app
 
-# Upgrade OpenSSL to 3.5.5+ and remove gnupg (CVE-2026-24882 has no fix)
-# Remove Node.js OpenSSL headers to avoid false positive detection (CVE-2025-15467)
-# Upgrade zlib and busybox to patch CVEs
-# Note: The actual fix requires a Node.js release with patched OpenSSL
-RUN apk update && \
-  apk upgrade --no-cache libcrypto3 libssl3 zlib busybox busybox-binsh ssl_client musl musl-utils && \
-    apk del gnupg 2>/dev/null || true && \
-    rm -rf /var/cache/apk/* && \
-    rm -rf /usr/local/include/node/openssl
+# Pull latest patched Alpine packages from the selected base image line.
+RUN apk upgrade --no-cache \
+  && rm -rf /var/cache/apk/*
 
-RUN npm install -g npm@11.7.0
-RUN rm -rf /usr/local/lib/node_modules/npm/node_modules/cross-spawn
-COPY package*.json ./
-#RUN npm ci --only=production
-RUN npm install --omit=dev \
-  && npm cache clean --force \
-  && rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
-COPY  --chown=node:node . .
+COPY --from=deps --chown=node:node /usr/src/app/node_modules ./node_modules
+COPY --chown=node:node . .
+
+# Runtime container does not need npm or npx.
+RUN rm -rf /usr/local/lib/node_modules/npm /usr/local/bin/npm /usr/local/bin/npx
+
+USER node
 EXPOSE 4030
 CMD [ "node", "./bin/www" ]
